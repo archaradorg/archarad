@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Minimalist Arad Administrative Palace Tower Silhouette -->
+  <defs>
+    <style>
+      .tower { fill: #5D4037; }
+    </style>
+  </defs>
+  
+  <!-- Main tower body -->
+  <rect class="tower" x="12" y="10" width="8" height="18" rx="0.5"/>
+  
+  <!-- Tower spire/dome -->
+  <polygon class="tower" points="16,2 19,10 13,10"/>
+  
+  <!-- Clock section -->
+  <rect class="tower" x="14" y="12" width="4" height="4" rx="2" fill="#F5F5DC"/>
+  <circle class="tower" cx="16" cy="14" r="1.5"/>
+  
+  <!-- Windows -->
+  <rect x="13.5" y="18" width="2" height="3" fill="#F5F5DC" rx="0.3"/>
+  <rect x="16.5" y="18" width="2" height="3" fill="#F5F5DC" rx="0.3"/>
+  <rect x="13.5" y="23" width="2" height="3" fill="#F5F5DC" rx="0.3"/>
+  <rect x="16.5" y="23" width="2" height="3" fill="#F5F5DC" rx="0.3"/>
+  
+  <!-- Base/foundation -->
+  <rect class="tower" x="8" y="28" width="16" height="2" rx="0.5"/>
+  
+  <!-- Side wings -->
+  <rect class="tower" x="6" y="20" width="6" height="8"/>
+  <rect class="tower" x="20" y="20" width="6" height="8"/>
+  
+  <!-- Side wing windows -->
+  <rect x="7" y="22" width="1.5" height="2" fill="#F5F5DC" rx="0.2"/>
+  <rect x="9.5" y="22" width="1.5" height="2" fill="#F5F5DC" rx="0.2"/>
+  <rect x="21" y="22" width="1.5" height="2" fill="#F5F5DC" rx="0.2"/>
+  <rect x="23.5" y="22" width="1.5" height="2" fill="#F5F5DC" rx="0.2"/>
+</svg>
