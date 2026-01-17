@@ -30,14 +30,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .maybeSingle();
 
       if (error) {
-        console.error('Error checking admin role:', error);
         setIsAdmin(false);
         return;
       }
 
       setIsAdmin(!!data);
-    } catch (error) {
-      console.error('Error checking admin role:', error);
+    } catch {
       setIsAdmin(false);
     }
   };
