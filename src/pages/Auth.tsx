@@ -104,8 +104,7 @@ const Auth: React.FC = () => {
           setIsLogin(true);
         }
       }
-    } catch (error) {
-      console.error('Auth error:', error);
+    } catch {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',

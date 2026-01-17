@@ -42,8 +42,8 @@ const Gallery: React.FC = () => {
 
       if (error) throw error;
       setPostcards(data || []);
-    } catch (error) {
-      console.error('Error fetching postcards:', error);
+    } catch {
+      // Error handled silently - user sees empty gallery
     } finally {
       setLoading(false);
     }

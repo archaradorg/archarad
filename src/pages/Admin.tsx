@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Navigate } from 'react-router-dom';
+import { z } from 'zod';
 
 interface Postcard {
   id: string;
@@ -54,6 +55,25 @@ const initialFormData: PostcardFormData = {
   description_de: '',
 };
 
+// Validation schema for postcard form
+const postcardSchema = z.object({
+  title_hu: z.string().min(1, 'Hungarian title is required').max(200, 'Title must be less than 200 characters'),
+  title_ro: z.string().min(1, 'Romanian title is required').max(200, 'Title must be less than 200 characters'),
+  title_en: z.string().min(1, 'English title is required').max(200, 'Title must be less than 200 characters'),
+  title_de: z.string().min(1, 'German title is required').max(200, 'Title must be less than 200 characters'),
+  year: z.string().optional().refine(
+    (val) => !val || (parseInt(val) >= 1800 && parseInt(val) <= 2100),
+    { message: 'Year must be between 1800 and 2100' }
+  ),
+  district: z.string().max(100, 'District must be less than 100 characters').optional(),
+  description_hu: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
+  description_ro: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
+  description_en: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
+  description_de: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
+});
+
+type ValidationErrors = Partial<Record<keyof PostcardFormData, string>>;
+
 const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { user, isAdmin, loading: authLoading, signOut } = useAuth();
@@ -67,6 +87,7 @@ const Admin: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   useEffect(() => {
     if (isAdmin) {
@@ -83,8 +104,7 @@ const Admin: React.FC = () => {
 
       if (error) throw error;
       setPostcards(data || []);
-    } catch (error) {
-      console.error('Error fetching postcards:', error);
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load postcards',
@@ -124,8 +144,36 @@ const Admin: React.FC = () => {
     return publicUrl;
   };
 
+  const validateForm = (): boolean => {
+    try {
+      postcardSchema.parse(formData);
+      setValidationErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: ValidationErrors = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof PostcardFormData;
+          errors[field] = err.message;
+        });
+        setValidationErrors(errors);
+      }
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fix the form errors before submitting',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setUploading(true);
 
     try {
@@ -148,16 +196,16 @@ const Admin: React.FC = () => {
       }
 
       const postcardData = {
-        title_hu: formData.title_hu,
-        title_ro: formData.title_ro,
-        title_en: formData.title_en,
-        title_de: formData.title_de,
+        title_hu: formData.title_hu.trim(),
+        title_ro: formData.title_ro.trim(),
+        title_en: formData.title_en.trim(),
+        title_de: formData.title_de.trim(),
         year: formData.year ? parseInt(formData.year) : null,
-        district: formData.district || null,
-        description_hu: formData.description_hu || null,
-        description_ro: formData.description_ro || null,
-        description_en: formData.description_en || null,
-        description_de: formData.description_de || null,
+        district: formData.district.trim() || null,
+        description_hu: formData.description_hu.trim() || null,
+        description_ro: formData.description_ro.trim() || null,
+        description_en: formData.description_en.trim() || null,
+        description_de: formData.description_de.trim() || null,
         image_url: imageUrl,
       };
 
@@ -180,8 +228,7 @@ const Admin: React.FC = () => {
 
       resetForm();
       fetchPostcards();
-    } catch (error) {
-      console.error('Error saving postcard:', error);
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to save postcard',
@@ -208,6 +255,7 @@ const Admin: React.FC = () => {
     setImagePreview(postcard.image_url);
     setEditingId(postcard.id);
     setIsFormOpen(true);
+    setValidationErrors({});
   };
 
   const handleDelete = async (id: string) => {
@@ -222,8 +270,7 @@ const Admin: React.FC = () => {
       if (error) throw error;
       toast({ title: 'Success', description: 'Postcard deleted' });
       fetchPostcards();
-    } catch (error) {
-      console.error('Error deleting postcard:', error);
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to delete postcard',
@@ -238,6 +285,7 @@ const Admin: React.FC = () => {
     setImagePreview(null);
     setEditingId(null);
     setIsFormOpen(false);
+    setValidationErrors({});
   };
 
   const getLocalizedTitle = (postcard: Postcard) => {
@@ -356,7 +404,12 @@ const Admin: React.FC = () => {
                       value={formData.year}
                       onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                       placeholder="1900"
+                      min="1800"
+                      max="2100"
                     />
+                    {validationErrors.year && (
+                      <p className="text-xs text-destructive">{validationErrors.year}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="district">{t('gallery.district')}</Label>
@@ -365,7 +418,11 @@ const Admin: React.FC = () => {
                       value={formData.district}
                       onChange={(e) => setFormData({ ...formData, district: e.target.value })}
                       placeholder="District name"
+                      maxLength={100}
                     />
+                    {validationErrors.district && (
+                      <p className="text-xs text-destructive">{validationErrors.district}</p>
+                    )}
                   </div>
                 </div>
 
@@ -380,8 +437,14 @@ const Admin: React.FC = () => {
                         id={`title_${lang}`}
                         value={formData[`title_${lang}` as keyof PostcardFormData]}
                         onChange={(e) => setFormData({ ...formData, [`title_${lang}`]: e.target.value })}
+                        maxLength={200}
                         required
                       />
+                      {validationErrors[`title_${lang}` as keyof PostcardFormData] && (
+                        <p className="text-xs text-destructive">
+                          {validationErrors[`title_${lang}` as keyof PostcardFormData]}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -398,7 +461,13 @@ const Admin: React.FC = () => {
                         value={formData[`description_${lang}` as keyof PostcardFormData]}
                         onChange={(e) => setFormData({ ...formData, [`description_${lang}`]: e.target.value })}
                         rows={3}
+                        maxLength={2000}
                       />
+                      {validationErrors[`description_${lang}` as keyof PostcardFormData] && (
+                        <p className="text-xs text-destructive">
+                          {validationErrors[`description_${lang}` as keyof PostcardFormData]}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
