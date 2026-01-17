@@ -5,6 +5,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import logoImage from '@/assets/logo.png';
 
 const languages: { code: Language; label: string }[] = [
   { code: 'hu', label: 'Magyar' },
@@ -34,10 +35,12 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <span className="font-heading text-2xl lg:text-3xl font-semibold text-primary">
-              ArchArad
-            </span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src={logoImage} 
+              alt="ArchArad - Digital Archive of Arad" 
+              className="h-12 lg:h-14 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
