@@ -108,46 +108,44 @@ export const Lightbox: React.FC<LightboxProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative max-w-5xl w-full max-h-[90vh] overflow-auto bg-card rounded-lg shadow-elevated"
+          className="relative w-full max-w-4xl max-h-[92vh] overflow-auto bg-card rounded-lg shadow-elevated flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="grid md:grid-cols-2">
-            {/* Image */}
-            <div className="relative">
-              <img
-                src={postcard.image_url}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+          {/* Image — primary focus */}
+          <div className="w-full bg-black flex items-center justify-center">
+            <img
+              src={postcard.image_url}
+              alt={title}
+              className="w-full max-h-[70vh] object-contain"
+            />
+          </div>
 
-            {/* Info */}
-            <div className="p-6 lg:p-8 space-y-6 flex flex-col justify-center">
-              <h2 className="font-heading text-2xl lg:text-3xl text-foreground">
-                {title}
-              </h2>
+          {/* Info — warm archival strip below */}
+          <div className="px-6 py-5 lg:px-8 lg:py-6 space-y-3 bg-secondary/60 border-t border-border">
+            <h2 className="font-heading text-xl lg:text-2xl text-foreground leading-snug">
+              {title}
+            </h2>
 
-              <div className="flex flex-wrap gap-4 text-sm font-body">
-                {postcard.year && (
-                  <div className="px-3 py-1.5 bg-secondary rounded-full">
-                    <span className="text-muted-foreground">{t('gallery.year')}:</span>{' '}
-                    <span className="text-foreground font-medium">{postcard.year}</span>
-                  </div>
-                )}
-                {postcard.district && (
-                  <div className="px-3 py-1.5 bg-secondary rounded-full">
-                    <span className="text-muted-foreground">{t('gallery.district')}:</span>{' '}
-                    <span className="text-foreground font-medium">{postcard.district}</span>
-                  </div>
-                )}
-              </div>
-
-              {description && (
-                <p className="font-body text-muted-foreground leading-relaxed">
-                  {description}
-                </p>
+            <div className="flex flex-wrap gap-3 text-sm font-body">
+              {postcard.year && (
+                <div className="px-3 py-1 bg-background/70 rounded-full border border-border/50">
+                  <span className="text-muted-foreground">{t('gallery.year')}:</span>{' '}
+                  <span className="text-foreground font-medium">{postcard.year}</span>
+                </div>
+              )}
+              {postcard.district && (
+                <div className="px-3 py-1 bg-background/70 rounded-full border border-border/50">
+                  <span className="text-muted-foreground">{t('gallery.district')}:</span>{' '}
+                  <span className="text-foreground font-medium">{postcard.district}</span>
+                </div>
               )}
             </div>
+
+            {description && (
+              <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                {description}
+              </p>
+            )}
           </div>
         </motion.div>
       </motion.div>
